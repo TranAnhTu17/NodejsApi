@@ -9,7 +9,7 @@ const validateBody = (schema) => {
         } else {
             if (!req.value) req.value = {};
             if (!req.value["params"]) req.value.params = {};
-            console.log(validatorResult);
+            console.log("validator result: ", validatorResult);
             req.value.body = validatorResult.value;
             next();
         }

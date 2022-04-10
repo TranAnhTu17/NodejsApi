@@ -3,6 +3,9 @@ const express = require("express");
 const router = require("express-promise-router")();
 const userController = require("../controllers/user");
 
+const passport = require("passport");
+require("../middlewares/passport");
+
 const {
     validateBody,
     validateParam,
@@ -19,8 +22,17 @@ router
     .post(validateBody(schemas.authSignUpSchema), userController.signUp);
 router
     .route("/signin")
-    .post(validateBody(schemas.authSignInSchema), userController.signIn);
-router.route("/secret").get(userController.secret);
+    .post(
+        validateBody(schemas.authSignInSchema),
+        passport.authenticate("local", { session: false }),
+        userController.signIn
+    );
+router
+    .route("/secret")
+    .get(
+        passport.authenticate("jwt", { session: false }),
+        userController.secret
+    );
 
 router
     .route("/:userID")

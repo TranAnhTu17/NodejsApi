@@ -27,18 +27,25 @@ UserSchema.pre("save", async function (next) {
     // theo ly thuyet:
     // this refers to the document being updated.
     try {
-        console.log("password", this.password);
         const salt = await bcrypt.genSalt(10);
-        console.log("salt", salt);
 
         const passwordHashed = await bcrypt.hash(this.password, salt);
-        console.log("passwordHashed", passwordHashed);
 
         this.password = passwordHashed;
+
+        next();
     } catch (error) {
         next(error);
     }
 });
+
+UserSchema.methods.isValidPassword = async function (newPassword) {
+    try {
+        return await bcrypt.compare(newPassword, this.password);
+    } catch (error) {
+        throw new Error(error);
+    }
+};
 
 const User = mongoose.model("User", UserSchema);
 module.exports = User;
